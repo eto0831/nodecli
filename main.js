@@ -37,7 +37,7 @@
 // import { sourceMapsEnabled } from "node:process";
 
 // try {
-//     const file = fs.readFileSync("sampple.md");
+//     const file = fs.readFileSync("sample.md");
 // } catch (err) {
 //     // ふぁおるが読み込めない時に呼ばれる
 // }
@@ -59,14 +59,16 @@
 import * as util from "node:util";
 // fs/promisesモジュールをfsオブジェクトとしてインポート
 import * as fs from "node:fs/promises";
-// markedモジュールからmarkedオブジェクトをインポートする
-import { marked } from "marked";
-
+// // markedモジュールからmarkedオブジェクトをインポートする
+// import { marked } from "marked";
+// md2htmlモジュールからmd2html関数をインポートする
+import { md2html } from "./md2html.js";
 // コマンドライン引数からファイルパスを取得する
 const { values, positionals } = util.parseArgs({
   allowPositionals: true,
   options: {
-    gfm: {
+    // gfmEnableフラグを定義する
+    gfmEnable: {
       // オプションの型をbooleanに指定
       type: "boolean",
       // --gfmフラグがない場合のデフォルト値をfalseに指定
@@ -75,15 +77,16 @@ const { values, positionals } = util.parseArgs({
   },
 });
 // valuesにはオプションのパース結果がオブジェクトとして格納される
-console.log(values.gfm); // --gfmフラグがあればtrueなければfalse
+console.log(values.gfmEnable); // --gfmEnableフラグがあればtrueなければfalse
+// ファイルパスをpositionals配列から取り出す
 const filePath = positionals[0];
 // ファイルをUTF-8として非同期で読み込む
 fs.readFile(filePath, { encoding: "utf-8" })
   .then((file) => {
-    // MarkdownファイルをHTML文字列に変換する
-    const html = marked.parse(file, {
-      // gfmフラグのパース結果をオプションとして渡す
-      gfm: values.gfm,
+    // md2htmlモジュールをつかってHTMLに間関する
+    const html = md2html(file, {
+      // gfmEnableフラグのパース結果をオプションとして渡す
+      gfm: values.gfmEnable,
     });
     console.log(html);
   })
